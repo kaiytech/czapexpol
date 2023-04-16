@@ -1,20 +1,22 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
-import { v4 } from 'uuid';
-import { prisma } from '../../database';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
-import { createHash } from '../../utils/hash.utils';
+import { create } from '../../functions/users';
 import { authorize } from '../../utils/middleware.utils';
-const SALT = (process.env.PASSWORD_SALT as string) ?? 't4jn3h4slo';
+import { prisma } from '../../database';
+import { IsAdmin } from '../../functions/validation';
+
 export default {
     method: 'post',
-    path: '/api/user',
+    path: '/api/user/create',
     validators: [
         authorize,
-        body('email').isEmail(),
+        body('mail').isEmail(),
         body('password').not().isEmpty(),
+        body('imienazwisko').not().isEmpty(),
+        body('adres').not().isEmpty(),
     ],
     handler: async (req: Request, res: Response) =>
         handleRequest({
@@ -25,16 +27,16 @@ export default {
                 uniqueConstraintFailed: 'Email must be unique.',
             },
             execute: async () => {
-                const { email, name, password } = req.body;
-                const passwordHash = createHash(password, SALT);
-                return await prisma.user.create({
-                    data: {
-                        id: v4(),
-                        name,
-                        email,
-                        password: passwordHash,
-                    },
-                });
+                if (await IsAdmin(req.headers.authorization)) {
+                    return create(
+                        req.body.mail,
+                        req.body.password,
+                        req.body.imienazwisko,
+                        req.body.adres,
+                    );
+                }
+                res.status(401);
+                return { data: { error: 'Not authorised' } };
             },
         }),
 } as TRoute;

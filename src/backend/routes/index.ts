@@ -1,7 +1,7 @@
 import express from 'express';
 import getStatus from './status/get.status';
-import postUser from './users/post.user';
-import loginUser from './users/login.users';
+import postUser from './user/create';
+import loginUser from './user/login';
 
 const router = express.Router();
 // home page route

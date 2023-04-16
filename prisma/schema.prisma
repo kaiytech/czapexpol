@@ -10,9 +10,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-    id String @id
-    email String @unique
-    name String?
+model Uzytkownik {
+    id Int  @id @default(autoincrement())
     password String
+    mail String @unique
+    pin Int?
+    token String?
+    loginToken String?
+    imienazwisko String
+    adres String
+    czysprzedawca Boolean
+    czyAdmin Boolean
+
+    ocenyKto Ocena[] @relation("a")
+    ocenyKomu Ocena[] @relation("b")
+    produkty Produkt[]
+    koszyk Koszyk[]
+    zakup Zakup[]
+}
+
+model Ocena {
+  id Int @id @default(autoincrement())
+
+  kto Uzytkownik @relation("a", fields: [ktoId], references: [id])
+  ktoId Int
+
+  komu Uzytkownik @relation("b", fields: [komuId], references: [id])
+  komuId Int
+
+  gwiazdki Int
+  zaakceptowana Boolean
+}
+
+model Kategoria {
+  nazwa String @id @unique
+  produkty Produkt[]
+}
+
+model Produkt {
+  id Int @id @default(autoincrement())
+  nazwa String
+  opis String?
+  zdjecie String?
+  kategoria Kategoria @relation(fields: [kategoriaId], references: [nazwa])
+  kategoriaId String
+  wlasciciel Uzytkownik @relation(fields: [wlascicielId], references: [id])
+  wlascicielId Int
+  stan Int
+  cena Float
+
+  koszyki Koszyk[]
+  zakup Zakup[]
+
+}
+
+model Koszyk {
+  id Int @id @default(autoincrement())
+  produkt Produkt @relation(fields: [produktId], references: [id])
+  produktId Int
+  kto Uzytkownik @relation(fields: [uzytkownikId], references: [id])
+  uzytkownikId Int
+  ile Int
+  ostatnioprzypomniany DateTime
+}
+
+model Zakup {
+  id Int @id @default(autoincrement())
+  produkt Produkt @relation(fields: [produktId], references: [id])
+  produktId Int
+  kto Uzytkownik @relation(fields: [uzytkownikId], references: [id])
+  uzytkownikId Int
+  ile Int
+  cena Float
+  ostatnioprzypomniany DateTime
 }
