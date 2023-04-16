@@ -5,8 +5,10 @@ import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
 import { create } from '../../functions/users';
 import { authorize } from '../../utils/middleware.utils';
-import { prisma } from '../../database';
 import { IsAdmin } from '../../functions/validation';
+import { AuthorizationError } from '../../utils/customErrors';
+
+var errorCode = StatusCodes.BAD_GATEWAY;
 
 export default {
     method: 'post',
@@ -22,21 +24,17 @@ export default {
         handleRequest({
             req,
             res,
-            responseSuccessStatus: StatusCodes.CREATED,
-            messages: {
-                uniqueConstraintFailed: 'Email must be unique.',
-            },
+            responseDefaultStatus: StatusCodes.CREATED,
             execute: async () => {
                 if (await IsAdmin(req.headers.authorization)) {
-                    return create(
+                    return await create(
                         req.body.mail,
                         req.body.password,
                         req.body.imienazwisko,
                         req.body.adres,
                     );
                 }
-                res.status(401);
-                return { data: { error: 'Not authorised' } };
+                throw new AuthorizationError();
             },
         }),
 } as TRoute;

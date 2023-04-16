@@ -2,55 +2,78 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { checkPrismaError, TPrismaErrorDescriptions } from './prisma.utils';
+import { Prisma } from '@prisma/client';
+import { AuthorizationError, ValidationError } from './customErrors';
 
 export type TRequestData<Entity> = {
     req: Request;
     res: Response;
     execute: () => Promise<Entity | Entity[]>;
-    responseSuccessStatus?: number;
-    responseFailStatus?: number;
+    responseDefaultStatus?: number;
     messages?: TPrismaErrorDescriptions;
-};
-
-export type TCustomError = {
-    isCustomError: true;
-    status: number;
-    message: string;
 };
 
 export const handleRequest = async <Entity>({
     req,
     res,
     execute,
-    responseSuccessStatus,
-    responseFailStatus,
+    responseDefaultStatus,
     messages,
 }: TRequestData<Entity>) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         return res
-            .status(responseFailStatus ?? StatusCodes.BAD_REQUEST)
-            .json({ errors: errors.array() });
+            .status(responseDefaultStatus ?? StatusCodes.BAD_REQUEST)
+            .json({ error: errors.array().join('; ') });
     }
+
+    if (responseDefaultStatus != null) res.status(responseDefaultStatus);
 
     try {
         const result = await execute();
-        res.status(responseSuccessStatus ?? StatusCodes.OK).json({
-            data: result,
-        });
-    } catch (err) {
-        console.error(err);
-        const parsedError = err as TCustomError;
-        if (parsedError.isCustomError) {
-            res.status(parsedError.status).json({
-                errors: [parsedError.message],
+        // handled exceptions:
+        // bad:
+        if (isStatusCodeBad(res.statusCode))
+            res.status(res.statusCode).json({
+                response: result,
+            });
+        // good:
+        else
+            res.status(res.statusCode).json({
+                error: result,
+            });
+    } catch (e) {
+        // unhandled exceptions:
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            let err = e.message.split(/\r?\n/);
+            res.status(StatusCodes.BAD_REQUEST).json({
+                error: err[err.length - 1],
+            });
+        } else if (e instanceof ValidationError) {
+            res.status(StatusCodes.BAD_REQUEST).json({
+                error:
+                    e.message == null || e.message == ''
+                        ? StatusCodes[res.statusCode]
+                        : e.message,
+            });
+        } else if (e instanceof AuthorizationError) {
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                error:
+                    e.message == null || e.message == ''
+                        ? StatusCodes[res.statusCode]
+                        : e.message,
             });
         } else {
-            const response = checkPrismaError(err, messages);
-            res.status(response.status).json({
-                errors: [response.message],
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                error: 'Internal server error',
             });
         }
     }
+
+    res.send();
 };
+
+export function isStatusCodeBad(code: number) {
+    return code.toString()[0] == '2';
+}
