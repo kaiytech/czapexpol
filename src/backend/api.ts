@@ -1,7 +1,7 @@
-import express from 'express'
-import { getStatus } from './routes/status/get.status'
-let router = express.Router()
+import express from 'express';
+import TRoute from './routes/status/get.status';
+let router = express.Router();
 
-router.get('/api/status', getStatus)
+router.get('/api/status', TRoute.handler);
 
-router.post('/api/sample', () => {})
+router.post('/api/sample', () => {});

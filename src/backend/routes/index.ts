@@ -1,15 +1,15 @@
 import express from 'express';
-import { getStatus } from './status/get.status';
-import { postUser } from './users/post.user';
+import getStatus from './status/get.status';
+import postUser from './users/post.user';
+import loginUser from './users/login.users';
+
 const router = express.Router();
-// middleware
-router.use((req, res, next) => {
-    console.log('Time: ', Date.now());
-    next();
-});
 // home page route
 router.get('/', (req, res) => {
     res.send('Example home page');
 });
-router.post('/api/user', postUser);
+const apiRoutes = [getStatus, postUser, loginUser];
+apiRoutes.forEach((route) =>
+    router[route.method](route.path, route.validators, route.handler),
+);
 export default router;
