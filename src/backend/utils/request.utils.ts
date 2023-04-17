@@ -24,7 +24,7 @@ export const handleRequest = async <Entity>({
 
     if (!errors.isEmpty()) {
         return res
-            .status(responseDefaultStatus ?? StatusCodes.BAD_REQUEST)
+            .status(StatusCodes.BAD_REQUEST)
             .json({ error: errors.array().join('; ') });
     }
 

@@ -1,9 +1,7 @@
 import { createHash } from '../utils/hash.utils';
 import { prisma } from '../database';
-import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { createToken } from '../utils/jwt.utils';
 import { SALT, SECRET } from '../config';
-import { Prisma } from '@prisma/client';
 import { ValidationError } from '../utils/customErrors';
 
 export async function login(mail: string, password: string, pin?: number) {
@@ -18,10 +16,10 @@ export async function login(mail: string, password: string, pin?: number) {
         SECRET,
         '7d',
     );
-    await prisma.uzytkownik.update({
-        where: { mail: mail },
-        data: { loginToken: loginToken },
-    });
+
+    let u = await prisma.uzytkownik.findFirst({ where: { mail: mail } });
+    if (!u) throw new ValidationError('User not found.');
+    await edit(u.id, undefined, undefined, undefined, undefined, loginToken);
 
     return {
         token: loginToken,
@@ -48,4 +46,46 @@ export async function create(
     });
 }
 
-export async function edit(mail: string) {}
+export async function edit(
+    id: number,
+    password?: string,
+    mail?: string,
+    pin?: number,
+    token?: string,
+    loginToken?: string,
+    imienazwisko?: string,
+    adres?: string,
+    czysprzedawca?: boolean,
+    czyAdmin?: boolean,
+) {
+    const user = await prisma.uzytkownik.findFirst({ where: { id } });
+    if (!user) throw new ValidationError('User not found.');
+
+    interface UpdateUserData {
+        password?: string;
+        mail?: string;
+        pin?: number;
+        token?: string;
+        loginToken?: string;
+        imienazwisko?: string;
+        adres?: string;
+        czysprzedawca?: boolean;
+        czyAdmin?: boolean;
+    }
+
+    const data: UpdateUserData = {};
+    if (password) data.password = createHash(password, SALT);
+    if (mail) data.mail = mail;
+    if (pin) data.pin = pin;
+    if (token) data.token = token;
+    if (loginToken) data.loginToken = loginToken;
+    if (imienazwisko) data.imienazwisko = imienazwisko;
+    if (adres) data.adres = adres;
+    if (czysprzedawca) data.czysprzedawca = czysprzedawca;
+    if (czyAdmin) data.czyAdmin = czyAdmin;
+
+    return await prisma.uzytkownik.update({
+        where: { id },
+        data: data,
+    });
+}
