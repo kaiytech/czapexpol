@@ -1,5 +1,5 @@
 import express from 'express';
-import TRoute from './routes/status/get.status';
+import TRoute from './routes/status/get';
 let router = express.Router();
 
 router.get('/api/status', TRoute.handler);
