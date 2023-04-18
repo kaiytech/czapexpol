@@ -7,3 +7,6 @@ export async function create(name: string) {
         },
     });
 }
+export async function catDelete(name: string) {
+    return prisma.kategoria.delete({ where: { nazwa: name } });
+}
