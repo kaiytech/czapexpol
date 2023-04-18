@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
-import { edit } from '../../functions/users';
+import { edit, userDelete } from '../../functions/users';
 import { authorize } from '../../utils/middleware.utils';
 import { IsAdmin } from '../../functions/validation';
 import { AuthorizationError, ValidationError } from '../../utils/customErrors';
@@ -12,7 +12,7 @@ import { prisma } from '../../database';
 const errorCode = StatusCodes.BAD_GATEWAY;
 
 export default {
-    method: 'put',
+    method: 'delete',
     path: '/api/user',
     validators: [authorize, body('id').not().isEmpty()],
     handler: async (req: Request, res: Response) =>
@@ -31,18 +31,7 @@ export default {
                     } catch {
                         throw new ValidationError('User not found.');
                     }
-                    return edit(
-                        user[0].id,
-                        req.body.password,
-                        req.body.mail,
-                        req.body.pin,
-                        req.body.token,
-                        req.body.loginToken,
-                        req.body.imienazwisko,
-                        req.body.adres,
-                        req.body.czysprzedawca,
-                        req.body.czyAdmin,
-                    );
+                    return userDelete(user[0].id);
                 } else {
                     let user;
                     try {
@@ -58,18 +47,7 @@ export default {
                             'Insufficient permissions.',
                         );
                     }
-                    return edit(
-                        user[0].id,
-                        req.body.password,
-                        req.body.mail,
-                        undefined,
-                        undefined,
-                        undefined,
-                        req.body.imienazwisko,
-                        req.body.adres,
-                        req.body.czysprzedawca,
-                        undefined,
-                    );
+                    return userDelete(user[0].id);
                 }
             },
         }),

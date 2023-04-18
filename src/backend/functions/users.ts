@@ -11,13 +11,13 @@ export async function login(mail: string, password: string, pin?: number) {
     if (!user) throw new ValidationError('User not found.');
     if (!passwordValid) throw new ValidationError('Incorrect password');
 
-    let loginToken = createToken(
+    const loginToken = createToken(
         { mail: user.mail, password: user.password },
         SECRET,
         '7d',
     );
 
-    let u = await prisma.uzytkownik.findFirst({ where: { mail: mail } });
+    const u = await prisma.uzytkownik.findFirst({ where: { mail: mail } });
     if (!u) throw new ValidationError('User not found.');
     await edit(u.id, undefined, undefined, undefined, undefined, loginToken);
 
@@ -88,4 +88,19 @@ export async function edit(
         where: { id },
         data: data,
     });
+}
+
+export async function userDelete(id: number) {
+    const user = await prisma.uzytkownik.findFirst({ where: { id } });
+    if (!user) throw new ValidationError('User not found.');
+
+    return await prisma.uzytkownik.delete({
+        where: { id },
+    });
+}
+
+export async function list() {
+    const users = await prisma.uzytkownik.findMany();
+
+    return users;
 }

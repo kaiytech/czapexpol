@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { checkPrismaError, TPrismaErrorDescriptions } from './prisma.utils';
+
 import { Prisma } from '@prisma/client';
 import { AuthorizationError, ValidationError } from './customErrors';
 
@@ -46,7 +47,7 @@ export const handleRequest = async <Entity>({
     } catch (e) {
         // unhandled exceptions:
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            let err = e.message.split(/\r?\n/);
+            const err = e.message.split(/\r?\n/);
             res.status(StatusCodes.BAD_REQUEST).json({
                 error: err[err.length - 1],
             });
@@ -66,7 +67,7 @@ export const handleRequest = async <Entity>({
             });
         } else {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                error: 'Internal server error',
+                error: (e as Error).message,
             });
         }
     }

@@ -8,11 +8,11 @@ import { authorize } from '../../utils/middleware.utils';
 import { IsAdmin } from '../../functions/validation';
 import { AuthorizationError } from '../../utils/customErrors';
 
-var errorCode = StatusCodes.BAD_GATEWAY;
+const errorCode = StatusCodes.BAD_GATEWAY;
 
 export default {
     method: 'post',
-    path: '/api/user/create',
+    path: '/api/user',
     validators: [
         authorize,
         body('mail').isEmail(),
