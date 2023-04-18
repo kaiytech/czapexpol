@@ -1,4 +1,7 @@
 import { prisma } from '../database';
+import { ValidationError } from '../utils/customErrors';
+import { createHash } from '../utils/hash.utils';
+import { SALT } from '../config';
 
 export async function create(name: string) {
     return prisma.kategoria.create({
@@ -17,4 +20,23 @@ export async function list(name?: string) {
     } else {
         return prisma.kategoria.findMany();
     }
+}
+
+export async function edit(name: string, newname?: string) {
+    const category = await prisma.kategoria.findFirst({
+        where: { nazwa: name },
+    });
+    if (!category) throw new ValidationError('Category not found.');
+
+    interface UpdateCategoryData {
+        nazwa?: string;
+    }
+
+    const data: UpdateCategoryData = {};
+    if (newname) data.nazwa = newname;
+
+    return await prisma.kategoria.update({
+        where: { nazwa: name },
+        data: data,
+    });
 }

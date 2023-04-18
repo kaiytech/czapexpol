@@ -22,8 +22,9 @@ export default {
             execute: async () => {
                 if (await IsAdmin(req.headers.authorization)) {
                     return await create(req.body.name);
+                } else {
+                    throw new AuthorizationError('Insufficient permissions.');
                 }
-                throw new AuthorizationError();
             },
         }),
 } as TRoute;

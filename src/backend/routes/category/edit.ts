@@ -3,15 +3,16 @@ import { body } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
-import { catDelete } from '../../functions/category';
+import { edit } from '../../functions/category';
 import { authorize } from '../../utils/middleware.utils';
 import { IsAdmin } from '../../functions/validation';
-import { AuthorizationError } from '../../utils/customErrors';
+import { AuthorizationError, ValidationError } from '../../utils/customErrors';
+import { prisma } from '../../database';
 
 const errorCode = StatusCodes.BAD_GATEWAY;
 
 export default {
-    method: 'delete',
+    method: 'put',
     path: '/api/category',
     validators: [authorize, body('name').not().isEmpty()],
     handler: async (req: Request, res: Response) =>
@@ -21,7 +22,7 @@ export default {
             responseDefaultStatus: StatusCodes.CREATED,
             execute: async () => {
                 if (await IsAdmin(req.headers.authorization)) {
-                    return catDelete(req.body.name);
+                    return edit(req.body.name, req.body.newname);
                 } else {
                     throw new AuthorizationError('Insufficient permissions.');
                 }
