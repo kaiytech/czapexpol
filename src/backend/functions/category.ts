@@ -10,3 +10,11 @@ export async function create(name: string) {
 export async function catDelete(name: string) {
     return prisma.kategoria.delete({ where: { nazwa: name } });
 }
+
+export async function list(name?: string) {
+    if (name) {
+        return prisma.kategoria.findMany({ where: { nazwa: name } });
+    } else {
+        return prisma.kategoria.findMany();
+    }
+}

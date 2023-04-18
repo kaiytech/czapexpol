@@ -7,6 +7,7 @@ import deleteUser from './user/delete';
 import listUsers from './user/list';
 import createCategory from './category/create';
 import deleteCategory from './category/delete';
+import getCategory from './category/get';
 const router = express.Router();
 // home page route
 router.get('/', (req, res) => {
@@ -21,6 +22,7 @@ const apiRoutes = [
     listUsers,
     createCategory,
     deleteCategory,
+    getCategory,
 ];
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),
