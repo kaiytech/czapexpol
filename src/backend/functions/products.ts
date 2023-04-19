@@ -30,3 +30,10 @@ export async function create(
 export async function deleteProduct(id: number) {
     return prisma.produkt.delete({ where: { id: id } });
 }
+export async function list(id?: number) {
+    if (id) {
+        return prisma.produkt.findFirst({ where: { id: id } });
+    } else {
+        return prisma.produkt.findMany();
+    }
+}
