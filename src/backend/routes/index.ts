@@ -10,7 +10,7 @@ import deleteCategory from './category/delete';
 import getCategory from './category/get';
 import editCategory from './category/edit';
 import createProduct from './product/create';
-
+import deleteProduct from './product/delete';
 const router = express.Router();
 // home page route
 router.get('/', (req, res) => {
@@ -28,6 +28,7 @@ const apiRoutes = [
     getCategory,
     editCategory,
     createProduct,
+    deleteProduct,
 ];
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),

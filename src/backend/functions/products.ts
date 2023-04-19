@@ -27,3 +27,6 @@ export async function create(
         },
     });
 }
+export async function deleteProduct(id: number) {
+    return prisma.produkt.delete({ where: { id: id } });
+}

@@ -19,7 +19,7 @@ export default {
         handleRequest({
             req,
             res,
-            responseDefaultStatus: StatusCodes.CREATED,
+            responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
                 if (await IsAdmin(req.headers.authorization)) {
                     return edit(req.body.name, req.body.newname);
