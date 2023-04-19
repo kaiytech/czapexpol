@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
 import { login } from '../../functions/users';
+import { ValidationError } from '../../utils/customErrors';
+import { IsVerified } from '../../functions/validation';
 
 export default {
     method: 'get',
@@ -19,7 +21,15 @@ export default {
             res,
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                return login(req.body.mail, req.body.password, req.body.pin);
+                if (await IsVerified(req.body.mail)) {
+                    return login(
+                        req.body.mail,
+                        req.body.password,
+                        req.body.pin,
+                    );
+                } else {
+                    throw new ValidationError('User not Verified.');
+                }
             },
         }),
 } as TRoute;

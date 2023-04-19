@@ -21,7 +21,7 @@ model Uzytkownik {
     adres String
     czysprzedawca Boolean
     czyAdmin Boolean
-
+    aktywacja String @default("0")
     ocenyKto Ocena[] @relation("a")
     ocenyKomu Ocena[] @relation("b")
     produkty Produkt[]

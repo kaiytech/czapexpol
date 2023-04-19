@@ -1,8 +1,9 @@
 import { createHash } from '../utils/hash.utils';
 import { prisma } from '../database';
 import { createToken } from '../utils/jwt.utils';
-import { SALT, SECRET } from '../config';
+import { activateSALT, SALT, SECRET } from '../config';
 import { ValidationError } from '../utils/customErrors';
+import { sendmail } from '../utils/mail';
 
 export async function login(mail: string, password: string, pin?: number) {
     const passwordHash = createHash(password, SALT);
@@ -33,6 +34,13 @@ export async function create(
     adres: string,
 ) {
     const passwordHash = createHash(password, SALT);
+    const token = createHash(mail, activateSALT);
+    sendmail(
+        mail,
+        `User Account Veryfication for user ${mail}`,
+        `Click this link to activate: http://localhost:3000/api/user/verify/${token}`,
+        `Click this link to activate: <a href='http://localhost:3000/api/user/verify/${token}'>LINK</a>`,
+    );
     return prisma.uzytkownik.create({
         data: {
             mail: mail,
@@ -41,12 +49,14 @@ export async function create(
             adres: adres,
             czysprzedawca: false,
             czyAdmin: false,
+            aktywacja: token,
         },
     });
 }
 
 export async function edit(
     id: number,
+    aktywacja?: string,
     password?: string,
     mail?: string,
     pin?: number,
@@ -61,6 +71,7 @@ export async function edit(
     if (!user) throw new ValidationError('User not found.');
 
     interface UpdateUserData {
+        aktywacja?: string;
         password?: string;
         mail?: string;
         pin?: number;
@@ -73,6 +84,7 @@ export async function edit(
     }
 
     const data: UpdateUserData = {};
+    if (aktywacja) data.aktywacja = aktywacja;
     if (password) data.password = createHash(password, SALT);
     if (mail) data.mail = mail;
     if (pin) data.pin = pin;
@@ -102,4 +114,15 @@ export async function list() {
     const users = await prisma.uzytkownik.findMany();
 
     return users;
+}
+export async function verify(token: string) {
+    const user = await prisma.uzytkownik.findFirst({
+        where: { aktywacja: token },
+    });
+    if (user) {
+        await edit(user.id, '1');
+        return '<h1>User Succesfull Activated</h1>';
+    } else {
+        throw new ValidationError('Link is expired.');
+    }
 }

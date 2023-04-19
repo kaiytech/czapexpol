@@ -20,3 +20,12 @@ export async function IsSeller(token?: string) {
     }
     return found[0].czysprzedawca;
 }
+export async function IsVerified(mail?: string) {
+    if (mail == null) return false;
+    const found = await prisma.uzytkownik.findMany({
+        where: { mail: mail },
+    });
+    if (found.length == 0) {
+        return false;
+    } else return found[0].aktywacja == '1';
+}

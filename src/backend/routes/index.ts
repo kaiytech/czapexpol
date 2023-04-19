@@ -5,6 +5,7 @@ import loginUser from './user/login';
 import editUser from './user/edit';
 import deleteUser from './user/delete';
 import listUsers from './user/list';
+import verifyUsers from './user/verify';
 import createCategory from './category/create';
 import deleteCategory from './category/delete';
 import getCategory from './category/get';
@@ -34,6 +35,7 @@ const apiRoutes = [
     deleteProduct,
     getProduct,
     editProduct,
+    verifyUsers,
 ];
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),
