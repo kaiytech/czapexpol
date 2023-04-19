@@ -8,16 +8,14 @@ import { authorize } from '../../utils/middleware.utils';
 import { IsSeller } from '../../functions/validation';
 import { AuthorizationError } from '../../utils/customErrors';
 
-const errorCode = StatusCodes.BAD_GATEWAY;
-
 export default {
     method: 'post',
     path: '/api/product',
     validators: [
         authorize,
         body('name').not().isEmpty(),
-        body('desc'),
-        body('photo'),
+        body('desc').optional,
+        body('photo').optional,
         body('category').not().isEmpty(),
         body('user').isNumeric().not().isEmpty(),
         body('quantity').isNumeric().not().isEmpty(),

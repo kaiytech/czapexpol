@@ -8,8 +8,6 @@ import { authorize } from '../../utils/middleware.utils';
 import { IsAdmin } from '../../functions/validation';
 import { AuthorizationError } from '../../utils/customErrors';
 
-const errorCode = StatusCodes.BAD_GATEWAY;
-
 export default {
     method: 'delete',
     path: '/api/category',

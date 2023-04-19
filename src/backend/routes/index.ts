@@ -12,6 +12,8 @@ import editCategory from './category/edit';
 import createProduct from './product/create';
 import deleteProduct from './product/delete';
 import getProduct from './product/get';
+import editProduct from './product/edit';
+
 const router = express.Router();
 // home page route
 router.get('/', (req, res) => {
@@ -31,6 +33,7 @@ const apiRoutes = [
     createProduct,
     deleteProduct,
     getProduct,
+    editProduct,
 ];
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),

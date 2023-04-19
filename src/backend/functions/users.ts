@@ -32,7 +32,6 @@ export async function create(
     imienazwisko: string,
     adres: string,
 ) {
-    const user = await prisma.uzytkownik.findFirst({ where: { mail } });
     const passwordHash = createHash(password, SALT);
     return prisma.uzytkownik.create({
         data: {

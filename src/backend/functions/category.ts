@@ -1,7 +1,5 @@
 import { prisma } from '../database';
 import { ValidationError } from '../utils/customErrors';
-import { createHash } from '../utils/hash.utils';
-import { SALT } from '../config';
 
 export async function create(name: string) {
     return prisma.kategoria.create({

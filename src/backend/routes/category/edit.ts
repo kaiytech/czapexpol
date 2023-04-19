@@ -6,10 +6,7 @@ import { handleRequest } from '../../utils/request.utils';
 import { edit } from '../../functions/category';
 import { authorize } from '../../utils/middleware.utils';
 import { IsAdmin } from '../../functions/validation';
-import { AuthorizationError, ValidationError } from '../../utils/customErrors';
-import { prisma } from '../../database';
-
-const errorCode = StatusCodes.BAD_GATEWAY;
+import { AuthorizationError } from '../../utils/customErrors';
 
 export default {
     method: 'put',
