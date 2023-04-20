@@ -4,6 +4,7 @@ import { createToken } from '../utils/jwt.utils';
 import { activateSALT, SALT, SECRET } from '../config';
 import { ValidationError } from '../utils/customErrors';
 import { sendmail } from '../utils/mail';
+import { deletePin, generatePIN } from '../utils/pin';
 
 export async function login(mail: string, password: string, pin?: number) {
     const passwordHash = createHash(password, SALT);
@@ -12,19 +13,41 @@ export async function login(mail: string, password: string, pin?: number) {
     if (!user) throw new ValidationError('User not found.');
     if (!passwordValid) throw new ValidationError('Incorrect password');
 
-    const loginToken = createToken(
-        { mail: user.mail, password: user.password },
-        SECRET,
-        '7d',
-    );
+    if (!pin) {
+        const responsepin = await generatePIN(user.id);
+        sendmail(
+            mail,
+            'Weryfikacja dwuetapowa czapexpol',
+            `twoj kod pin to ${responsepin}`,
+            `twoj kod pin to <b>${responsepin}</b>`,
+        );
+        return {
+            error: 'pin required',
+        };
+    } else if (pin == user.pin) {
+        const loginToken = createToken(
+            { mail: user.mail, password: user.password },
+            SECRET,
+            '7d',
+        );
 
-    const u = await prisma.uzytkownik.findFirst({ where: { mail: mail } });
-    if (!u) throw new ValidationError('User not found.');
-    await edit(u.id, undefined, undefined, undefined, undefined, loginToken);
-
-    return {
-        token: loginToken,
-    };
+        const u = await prisma.uzytkownik.findFirst({ where: { mail: mail } });
+        if (!u) throw new ValidationError('User not found.');
+        await edit(
+            u.id,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            loginToken,
+        );
+        await deletePin(user.id);
+        return {
+            token: loginToken,
+        };
+    } else {
+        throw new ValidationError('Bad PIN.');
+    }
 }
 
 export async function create(
