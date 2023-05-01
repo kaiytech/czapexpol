@@ -9,11 +9,14 @@
   "scripts": {
     "be-dev": "npx nodemon src/backend/index.ts",
     "be-start": "node dist/backend/index.js",
-    "be-build": "tsc -p tsconfig.json"
+    "be-build": "tsc -p tsconfig.json",
+    "test": "cucumber-js src/test/features/*.feature --require-module ts-node/register --import ['src/test/steps/*.js','src/test/helpers/hooks.js'] --format progress-bar --publish-quiet"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^9.0.0",
     "@eslint/create-config": "^0.4.2",
     "@types/cors": "^2.8.13",
+    "@types/cucumber": "^7.0.0",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.15.11",
@@ -21,11 +24,15 @@
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
+    "chai": "^4.3.7",
+    "cucumber-tsflow": "^4.0.0-rc.7",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.11.0",
+    "glob": "^10.2.2",
     "nodemon": "^2.0.22",
+    "path": "^0.12.7",
     "prettier": "^2.8.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
@@ -41,6 +48,7 @@
     "jsonwebtoken": "^9.0.0",
     "nodemailer": "^6.9.1",
     "prisma": "^4.12.0",
+    "request": "^2.88.2",
     "uuid": "^9.0.0"
   }
 }

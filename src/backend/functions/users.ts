@@ -144,7 +144,7 @@ export async function verify(token: string) {
     });
     if (user) {
         await edit(user.id, '1');
-        return '<h1>User Succesfull Activated</h1>';
+        return '<h1>User Successfully Activated</h1>';
     } else {
         throw new ValidationError('Link is expired.');
     }

@@ -1,8 +1,8 @@
 import { startServer } from './server';
 import { config } from './config';
 import { prisma } from './database';
-async function main() {
-    await startServer(config.server);
+export async function main() {
+    return startServer(config.server);
 }
 main()
     .then(async () => {
