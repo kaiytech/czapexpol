@@ -22,6 +22,8 @@ model Uzytkownik {
     czysprzedawca Boolean
     czyAdmin Boolean
     aktywacja String @default("0")
+
+
     ocenyKto Ocena[] @relation("a")
     ocenyKomu Ocena[] @relation("b")
     produkty Produkt[]
@@ -82,5 +84,5 @@ model Zakup {
   uzytkownikId Int
   ile Int
   cena Float
-  ostatnioprzypomniany DateTime
+  dataZakupu DateTime
 }
