@@ -31,16 +31,22 @@ export async function create(
 export async function deleteProduct(id: number) {
     return await prisma.produkt.delete({ where: { id: id } });
 }
-export async function list(id?: number, query?: string) {
+export async function list(id?: number, query?: string, categoryid?: string) {
     if (id) {
         return await prisma.produkt.findFirst({ where: { id: id } });
-    } else if (query) {
+    } else if (query || categoryid) {
+        interface queryData {
+            nazwa: {
+                contains?: string;
+            };
+            kategoriaId?: string;
+        }
+        const data: queryData = { nazwa: {} };
+        if (query) data.nazwa.contains = query;
+        if (categoryid) data.kategoriaId = categoryid;
+
         return await prisma.produkt.findMany({
-            where: {
-                nazwa: {
-                    contains: query,
-                },
-            },
+            where: data,
         });
     } else {
         return await prisma.produkt.findMany();

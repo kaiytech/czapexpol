@@ -13,6 +13,7 @@ export default {
         authorize,
         body('id').isNumeric().optional(),
         body('query').optional(),
+        body('category').optional(),
     ],
     handler: async (req: Request, res: Response) =>
         handleRequest({
@@ -20,7 +21,11 @@ export default {
             res,
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                return await list(req.body.productid, req.body.query);
+                return await list(
+                    req.body.id,
+                    req.body.query,
+                    req.body.category,
+                );
             },
         }),
 } as TRoute;
