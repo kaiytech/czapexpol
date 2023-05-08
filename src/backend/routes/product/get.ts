@@ -9,14 +9,18 @@ import { authorize } from '../../utils/middleware.utils';
 export default {
     method: 'get',
     path: '/api/product',
-    validators: [authorize, body('id').isNumeric().optional()],
+    validators: [
+        authorize,
+        body('id').isNumeric().optional(),
+        body('query').optional(),
+    ],
     handler: async (req: Request, res: Response) =>
         handleRequest({
             req,
             res,
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                return await list(req.body.id);
+                return await list(req.body.id, req.body.query);
             },
         }),
 } as TRoute;
