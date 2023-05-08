@@ -20,3 +20,19 @@ export async function create(
         },
     });
 }
+export async function list(usermail: string) {
+    const user = await prisma.uzytkownik.findFirst({
+        where: { mail: usermail },
+    });
+    if (!user) throw new ValidationError('User not found.');
+
+    return prisma.koszyk.findMany({ where: { uzytkownikId: user.id } });
+}
+export async function deleteCart(id: number) {
+    const cart = await prisma.koszyk.findFirst({
+        where: { id },
+    });
+    if (!cart) throw new ValidationError('Cart not found.');
+
+    return prisma.koszyk.delete({ where: { id } });
+}
