@@ -21,7 +21,7 @@ export default {
                     (await IsSeller(req.headers.authorization)) ||
                     (await IsAdmin(req.headers.authorization))
                 ) {
-                    return edit(
+                    return await edit(
                         req.body.id,
                         req.body.name,
                         req.body.category,

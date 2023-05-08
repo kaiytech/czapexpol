@@ -47,7 +47,7 @@ export default {
                             'Insufficient permissions.',
                         );
                     }
-                    return userDelete(user[0].id);
+                    return await userDelete(user[0].id);
                 }
             },
         }),

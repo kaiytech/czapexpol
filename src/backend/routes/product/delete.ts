@@ -21,7 +21,7 @@ export default {
                     (await IsSeller(req.headers.authorization)) ||
                     (await IsAdmin(req.headers.authorization))
                 ) {
-                    return deleteProduct(req.body.id);
+                    return await deleteProduct(req.body.id);
                 }
             },
         }),

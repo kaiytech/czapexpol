@@ -64,7 +64,7 @@ export async function create(
         `Click this link to activate: http://localhost:3000/api/user/verify/${token}`,
         `Click this link to activate: <a href='http://localhost:3000/api/user/verify/${token}'>LINK</a>`,
     );
-    return prisma.uzytkownik.create({
+    return await prisma.uzytkownik.create({
         data: {
             mail: mail,
             password: passwordHash,

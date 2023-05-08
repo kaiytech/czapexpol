@@ -2,21 +2,21 @@ import { prisma } from '../database';
 import { ValidationError } from '../utils/customErrors';
 
 export async function create(name: string) {
-    return prisma.kategoria.create({
+    return await prisma.kategoria.create({
         data: {
             nazwa: name,
         },
     });
 }
 export async function catDelete(name: string) {
-    return prisma.kategoria.delete({ where: { nazwa: name } });
+    return await prisma.kategoria.delete({ where: { nazwa: name } });
 }
 
 export async function list(name?: string) {
     if (name) {
-        return prisma.kategoria.findMany({ where: { nazwa: name } });
+        return await prisma.kategoria.findMany({ where: { nazwa: name } });
     } else {
-        return prisma.kategoria.findMany();
+        return await prisma.kategoria.findMany();
     }
 }
 

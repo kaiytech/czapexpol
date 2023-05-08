@@ -58,7 +58,7 @@ export default {
                             'Insufficient permissions.',
                         );
                     }
-                    return edit(
+                    return await edit(
                         user[0].id,
                         req.body.password,
                         req.body.mail,

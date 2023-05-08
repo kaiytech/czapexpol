@@ -10,8 +10,13 @@ export async function create(
         where: { mail: usermail },
     });
     if (!user) throw new ValidationError('User not found.');
-
-    return prisma.koszyk.create({
+    const cart = await prisma.koszyk.findFirst({
+        where: { produktId: productid, uzytkownikId: user.id },
+    });
+    if (cart) {
+        return await edit(cart.id, cart.ile + count, cart.ostatnioprzypomniany);
+    }
+    return await prisma.koszyk.create({
         data: {
             produktId: productid,
             uzytkownikId: user.id,
@@ -26,7 +31,7 @@ export async function list(usermail: string) {
     });
     if (!user) throw new ValidationError('User not found.');
 
-    return prisma.koszyk.findMany({ where: { uzytkownikId: user.id } });
+    return await prisma.koszyk.findMany({ where: { uzytkownikId: user.id } });
 }
 export async function deleteCart(id: number) {
     const cart = await prisma.koszyk.findFirst({
@@ -34,5 +39,30 @@ export async function deleteCart(id: number) {
     });
     if (!cart) throw new ValidationError('Cart not found.');
 
-    return prisma.koszyk.delete({ where: { id } });
+    return await prisma.koszyk.delete({ where: { id } });
+}
+export async function edit(
+    id: number,
+    quantity?: number,
+    ostatnioprzypomniany?: Date,
+) {
+    const cart = await prisma.koszyk.findFirst({
+        where: { id },
+    });
+    if (!cart) throw new ValidationError('Cart not found.');
+    interface UpdateCartData {
+        produktId?: number;
+        uzytkownikId?: number;
+        ile?: number;
+        ostatnioprzypomniany?: Date;
+    }
+
+    const data: UpdateCartData = {};
+    if (quantity) data.ile = quantity;
+    if (ostatnioprzypomniany) data.ostatnioprzypomniany = ostatnioprzypomniany;
+
+    return await prisma.koszyk.update({
+        where: { id: id },
+        data: data,
+    });
 }

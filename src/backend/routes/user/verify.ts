@@ -15,7 +15,7 @@ export default {
             res,
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                return verify(req.params.token);
+                return await verify(req.params.token);
             },
         }),
 } as TRoute;

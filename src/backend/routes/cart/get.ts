@@ -14,7 +14,7 @@ export default {
         handleRequest({
             req,
             res,
-            responseDefaultStatus: StatusCodes.CREATED,
+            responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
                 return await list(req.body.useremail);
             },

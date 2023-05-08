@@ -3,26 +3,24 @@ import { body } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
-import { catDelete } from '../../functions/category';
+import { edit } from '../../functions/cart';
 import { authorize } from '../../utils/middleware.utils';
-import { IsAdmin } from '../../functions/validation';
-import { AuthorizationError } from '../../utils/customErrors';
 
 export default {
-    method: 'delete',
-    path: '/api/category',
-    validators: [authorize, body('name').not().isEmpty()],
+    method: 'put',
+    path: '/api/cart',
+    validators: [
+        authorize,
+        body('id').isNumeric().not().isEmpty(),
+        body('quantity').isNumeric().optional(),
+    ],
     handler: async (req: Request, res: Response) =>
         handleRequest({
             req,
             res,
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                if (await IsAdmin(req.headers.authorization)) {
-                    return await catDelete(req.body.name);
-                } else {
-                    throw new AuthorizationError('Insufficient permissions.');
-                }
+                return await edit(req.body.id, req.body.quantity);
             },
         }),
 } as TRoute;

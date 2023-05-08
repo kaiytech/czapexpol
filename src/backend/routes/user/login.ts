@@ -22,7 +22,7 @@ export default {
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
                 if (await IsVerified(req.body.mail)) {
-                    return login(
+                    return await login(
                         req.body.mail,
                         req.body.password,
                         req.body.pin,

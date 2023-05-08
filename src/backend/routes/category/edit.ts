@@ -19,7 +19,7 @@ export default {
             responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
                 if (await IsAdmin(req.headers.authorization)) {
-                    return edit(req.body.name, req.body.newname);
+                    return await edit(req.body.name, req.body.newname);
                 } else {
                     throw new AuthorizationError('Insufficient permissions.');
                 }
