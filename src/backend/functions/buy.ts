@@ -33,3 +33,9 @@ export async function buyCart(userid: number) {
     }
     return finalbuy;
 }
+export async function list(userid: number) {
+    const products = await prisma.zakup.findMany({
+        where: { uzytkownikId: userid },
+    });
+    return await products;
+}

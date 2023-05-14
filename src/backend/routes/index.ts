@@ -19,6 +19,7 @@ import getCart from './cart/get';
 import deleteCart from './cart/delete';
 import editCart from './cart/edit';
 import postBuy from './buy/post';
+import getBuy from './buy/get';
 const router = express.Router();
 // home page route
 router.get('/', (req, res) => {
@@ -45,6 +46,7 @@ const apiRoutes = [
     deleteCart,
     editCart,
     postBuy,
+    getBuy,
 ];
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),
