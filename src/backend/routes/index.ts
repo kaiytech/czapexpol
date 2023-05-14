@@ -51,4 +51,5 @@ const apiRoutes = [
 apiRoutes.forEach((route) =>
     router[route.method](route.path, route.validators, route.handler),
 );
+
 export default router;
