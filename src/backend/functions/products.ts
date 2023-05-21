@@ -16,7 +16,7 @@ export async function create(
     if (!photo) {
         photo = 'null';
     }
-    return prisma.produkt.create({
+    return await prisma.produkt.create({
         data: {
             nazwa: name,
             opis: desc,
