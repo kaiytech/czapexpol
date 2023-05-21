@@ -83,7 +83,6 @@ export async function edit(
     password?: string,
     mail?: string,
     pin?: number,
-    token?: string,
     loginToken?: string,
     imienazwisko?: string,
     adres?: string,
@@ -98,7 +97,6 @@ export async function edit(
         password?: string;
         mail?: string;
         pin?: number;
-        token?: string;
         loginToken?: string;
         imienazwisko?: string;
         adres?: string;
@@ -111,7 +109,6 @@ export async function edit(
     if (password) data.password = createHash(password, SALT);
     if (mail) data.mail = mail;
     if (pin) data.pin = pin;
-    if (token) data.token = token;
     if (loginToken) data.loginToken = loginToken;
     if (imienazwisko) data.imienazwisko = imienazwisko;
     if (adres) data.adres = adres;

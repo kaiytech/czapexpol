@@ -15,7 +15,6 @@ model Uzytkownik {
     password String
     mail String @unique
     pin Int?
-    token String?
     loginToken String?
     imienazwisko String
     adres String
@@ -42,6 +41,7 @@ model Ocena {
 
   gwiazdki Int
   zaakceptowana Boolean
+
 }
 
 model Kategoria {

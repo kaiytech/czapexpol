@@ -3,29 +3,35 @@ import { body } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
-import { create } from '../../functions/rating';
+import { edit } from '../../functions/rating';
 import { authorize } from '../../utils/middleware.utils';
+import { IsAdmin } from '../../functions/validation';
+import { AuthorizationError } from '../../utils/customErrors';
 
 export default {
-    method: 'post',
+    method: 'put',
     path: '/api/rating',
     validators: [
         authorize,
         body('who').isNumeric().not().isEmpty(),
         body('whom').isNumeric().not().isEmpty(),
-        body('stars').isNumeric().not().isEmpty(),
     ],
     handler: async (req: Request, res: Response) =>
         handleRequest({
             req,
             res,
-            responseDefaultStatus: StatusCodes.CREATED,
+            responseDefaultStatus: StatusCodes.OK,
             execute: async () => {
-                return await create(
-                    req.body.who,
-                    req.body.whom,
-                    req.body.stars,
-                );
+                if (await IsAdmin(req.headers.authorization)) {
+                    return await edit(
+                        req.body.who,
+                        req.body.whom,
+                        req.body.accept,
+                        req.body.stars,
+                    );
+                } else {
+                    throw new AuthorizationError('Insufficient permissions.');
+                }
             },
         }),
 } as TRoute;
