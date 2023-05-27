@@ -25,12 +25,28 @@ export class UserSteps {
     };
 
     private cachedPin: number = 0;
-    private cachedToken: string = '';
+    public static cachedToken: string = '';
 
     @when(/^(?:I am|They are|He is|She is) a logged in user$/)
     public async LoggedInUser() {
         await this.RegisteredUser();
         await this.LogIn();
+    }
+
+    @when(/^(?:I am|They are|He is|She is) a seller$/)
+    public async MakeSeller() {
+        await prisma.uzytkownik.update({
+            where: { mail: Constants.userEmail },
+            data: { czysprzedawca: true },
+        });
+    }
+
+    @when(/^(?:I am|They are|He is|She is) not a seller$/)
+    public async UnMakeSeller() {
+        await prisma.uzytkownik.update({
+            where: { mail: Constants.userEmail },
+            data: { czysprzedawca: false },
+        });
     }
 
     @given(/^(?:I am|They are|He is|She is) a registered user$/)
@@ -87,7 +103,8 @@ export class UserSteps {
             },
         );
 
-        this.cachedToken = this.cachedResponse.response.body.response.token;
+        UserSteps.cachedToken =
+            this.cachedResponse.response.body.response.token;
 
         await sleep(14);
     }
@@ -151,7 +168,7 @@ export class UserSteps {
             Constants.serverUrl + '/api/user',
             'PUT',
             body,
-            this.cachedToken,
+            UserSteps.cachedToken,
         );
     }
 
@@ -196,7 +213,7 @@ export class UserSteps {
             Constants.serverUrl + '/api/user',
             'PUT',
             { id: u.id, password: password },
-            this.cachedToken,
+            UserSteps.cachedToken,
         );
     }
 
@@ -226,7 +243,7 @@ export class UserSteps {
             {
                 id: u.id,
             },
-            this.cachedToken,
+            UserSteps.cachedToken,
         );
     }
 
