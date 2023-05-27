@@ -60,7 +60,7 @@ export async function create(
     const token = createHash(mail, activateSALT);
     sendmail(
         mail,
-        `User Account Veryfication for user ${mail}`,
+        `User Account Verification for user ${mail}`,
         `Click this link to activate: http://localhost:3000/api/user/verify/${token}`,
         `Click this link to activate: <a href='http://localhost:3000/api/user/verify/${token}'>LINK</a>`,
     );

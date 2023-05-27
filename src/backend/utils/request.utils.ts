@@ -34,12 +34,12 @@ export const handleRequest = async <Entity>({
     try {
         const result = await execute();
         // handled exceptions:
-        // bad:
-        if (isStatusCodeBad(res.statusCode))
+        // good:
+        if (isStatusCodeGood(res.statusCode))
             res.status(res.statusCode).json({
                 response: result,
             });
-        // good:
+        // bad:
         else
             res.status(res.statusCode).json({
                 error: result,
@@ -75,6 +75,6 @@ export const handleRequest = async <Entity>({
     res.send();
 };
 
-export function isStatusCodeBad(code: number) {
+export function isStatusCodeGood(code: number) {
     return code.toString()[0] == '2';
 }
