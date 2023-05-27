@@ -24,9 +24,16 @@ export const handleRequest = async <Entity>({
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ error: errors.array().join('; ') });
+        let outMsg = '';
+        errors.array().forEach(function (error) {
+            // @ts-ignore
+            outMsg += error.path;
+            outMsg += ': ';
+            outMsg += error.msg;
+            outMsg += '; ';
+        });
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: outMsg });
     }
 
     if (responseDefaultStatus != null) res.status(responseDefaultStatus);
