@@ -5,7 +5,7 @@ import { TRoute } from '../types';
 import { handleRequest } from '../../utils/request.utils';
 import { create } from '../../functions/products';
 import { authorize } from '../../utils/middleware.utils';
-import { IsSeller } from '../../functions/validation';
+import { IsAdmin, IsSeller } from '../../functions/validation';
 import { AuthorizationError } from '../../utils/customErrors';
 
 export default {
@@ -14,8 +14,8 @@ export default {
     validators: [
         authorize,
         body('name').not().isEmpty(),
-        body('desc').optional,
-        body('photo').optional,
+        body('desc').optional(),
+        body('photo').optional(),
         body('category').not().isEmpty(),
         body('user').isNumeric().not().isEmpty(),
         body('quantity').isNumeric().not().isEmpty(),
@@ -27,7 +27,10 @@ export default {
             res,
             responseDefaultStatus: StatusCodes.CREATED,
             execute: async () => {
-                if (await IsSeller(req.headers.authorization)) {
+                if (
+                    (await IsSeller(req.headers.authorization)) ||
+                    (await IsAdmin(req.headers.authorization))
+                ) {
                     return await create(
                         req.body.name,
                         req.body.category,
